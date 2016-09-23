@@ -1,50 +1,56 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="template/tags.jsp"%>
-<%@page session="true"%>
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<%@ include file="template/layout.jsp"%>
-	
+	<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+	<meta name="_csrf" content="${_csrf.token}" />
+	<meta name="_csrf_header" content="${_csrf.headerName}" />
 </head>
 <body>
-
 	<div class="main-content">
-		<div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs">
-			<ul class="breadcrumb">
-				<li class="active">
-					<i class="ace-icon fa fa-home home-icon"></i>
-					Pagina Inicial
-				</li>
-			</ul><!-- /.breadcrumb -->
-
-			<!-- <div class="col-sm-3 no-padding-right pull-right">
-				<input type="text" id="funcionalidade" class="width-100">
-			</div> -->
-			<div class="col-sm-3 no-padding-right pull-right">
-				<input type="text" id="cpf" class="width-100">
-			</div>
-		</div>
-		<div class="main-content-inner">
-		<div class="page-content">
-			<%-- <div class="row" style="margin-top:40px;">
-				<c:url value="/indesSelenium" var="varJson" />
-				<a href="${varJson}" target="blank"> LINK SELENIUM</a>
-			</div> --%>
-			<div class="row">
-				<br/><br/><br/><br/><br/><br/><br/>
-			</div>
-			<div class="row">
-				<div class="center">
-					<!-- <h4 class="blue text-shadow-black" id="id-company-text">© <b>GESTÃO DE CENTROS DE FORMAÇÃO DE CONDUTORES</b></h4> -->
-				</div>
-			</div>
-		</div>
+	
+		<p>Logged in as</p><sec:authentication property="principal.username" />
+		
+		<sec:authorize access="isAuthenticated()">
+			<c:url value="/j_spring_security_logout" var="logoutUrl" />
+			<form action="${logoutUrl}" method="post" id="logoutForm">
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+			</form>
+			<script>
+				function formSubmit() {
+					document.getElementById("logoutForm").submit();
+				}
+			</script>
+	 
+			<c:if test="${pageContext.request.userPrincipal.name != null}">
+				<a href="javascript:formSubmit()"> <i class="ace-icon fa fa-power-off"></i>
+				Sign out</a>
+			</c:if>
+		</sec:authorize>
+		
 	</div>
 	
-	<%@ include file="template/layoutBottom.jsp"%>
-	
-</div>
+	<script type="text/javascript">
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+
+		//Configuring Ajax, if necessary.
+		$.ajaxSetup({
+			complete : function(xhr, status) {
+				if (xhr.responseText == 'invalidSession') {
+					window.location = '${contextPath}/login?logout';
+				}
+				hideLoading();
+			},
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.setRequestHeader("Accept", "application/json");
+				var token = $("meta[name='_csrf']").attr("content");
+				var header = $("meta[name='_csrf_header']").attr("content");
+				xhr.setRequestHeader(header, token);
+			}
+		});
+	</script>
 </body>
 </html>

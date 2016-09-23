@@ -2,8 +2,6 @@ package com.marcusvmleite.model;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,17 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name = "usuario", schema = "public")
-public class Usuario implements Serializable, UserDetails {
+@Table(name = "users", schema = "public")
+public class User implements Serializable, UserDetails {
 
 	/**
 	 * 
@@ -35,31 +30,11 @@ public class Usuario implements Serializable, UserDetails {
     @Column(name = "id", updatable = false)
     private Integer id;
 
-	@Column(name="usuario")
-    private String usuario;
+	@Column(name="username")
+    private String username;
 	
-	@Column(name="senha")
-    private String senha;
-	
-	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-	@Column(name = "ultimo_login")
-	@Temporal(TemporalType.TIMESTAMP)
-    private Date lastLogin;
-	
-	@Column
-	private Integer attempts;
-	
-	@Column
-	private Boolean bloqueado;
-	
-	@Transient
-	private String confirmacaoSenha;
-	
-	@Transient
-	private Set<Integer> perfisTemp;
-	
-	@Transient
-	private Set<Integer> filiaisTemp;
+	@Column(name="password")
+    private String password;
 	
 	@Transient
 	private boolean enabled;
@@ -72,18 +47,18 @@ public class Usuario implements Serializable, UserDetails {
 	@Transient
 	private Collection<GrantedAuthority> authorities;
 	
-    public Usuario() { }
+    public User() { }
 
-    public Usuario(Integer id) {
+    public User(Integer id) {
 		this.id = id;
 	}
     
-	public Usuario(Integer id, String usuario, String senha, boolean enabled,
+	public User(Integer id, String username, String password, boolean enabled,
 			boolean accountNonExpired, boolean credentialsNonExpired,
 			boolean accountNonLocked, Collection<GrantedAuthority> authorities) {
 		this.id = id;
-		this.usuario = usuario;
-		this.senha = senha;
+		this.username = username;
+		this.password = password;
 		this.enabled = enabled;
 		this.accountNonExpired = accountNonExpired;
 		this.credentialsNonExpired = credentialsNonExpired;
@@ -100,19 +75,19 @@ public class Usuario implements Serializable, UserDetails {
 	}
 
 	public String getUsuario() {
-		return usuario;
+		return username;
 	}
 
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
+	public void setUsuario(String username) {
+		this.username = username;
 	}
 
-	public String getSenha() {
-		return senha;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setSenha(String senha) {
-		this.senha = senha;
+	public void setSenha(String password) {
+		this.password = password;
 	}
 
 	@Override
@@ -121,13 +96,8 @@ public class Usuario implements Serializable, UserDetails {
 	}
 
 	@Override
-	public String getPassword() {
-		return senha;
-	}
-
-	@Override
 	public String getUsername() {
-		return usuario;
+		return username;
 	}
 
 	@Override
@@ -168,54 +138,6 @@ public class Usuario implements Serializable, UserDetails {
 
 	public void setAuthorities(Collection<GrantedAuthority> authorities) {
 		this.authorities = authorities;
-	}
-
-	public String getConfirmacaoSenha() {
-		return confirmacaoSenha;
-	}
-
-	public void setConfirmacaoSenha(String confirmacaoSenha) {
-		this.confirmacaoSenha = confirmacaoSenha;
-	}
-
-	public Set<Integer> getPerfisTemp() {
-		return perfisTemp;
-	}
-
-	public void setPerfisTemp(Set<Integer> perfisTemp) {
-		this.perfisTemp = perfisTemp;
-	}
-
-	public Set<Integer> getFiliaisTemp() {
-		return filiaisTemp;
-	}
-
-	public void setFiliaisTemp(Set<Integer> filiaisTemp) {
-		this.filiaisTemp = filiaisTemp;
-	}
-
-	public Integer getAttempts() {
-		return attempts;
-	}
-
-	public void setAttempts(Integer attempts) {
-		this.attempts = attempts;
-	}
-
-	public Boolean getBloqueado() {
-		return bloqueado;
-	}
-
-	public void setBloqueado(Boolean bloqueado) {
-		this.bloqueado = bloqueado;
-	}
-
-	public Date getLastLogin() {
-		return lastLogin;
-	}
-
-	public void setLastLogin(Date lastLogin) {
-		this.lastLogin = lastLogin;
 	}
 
 }

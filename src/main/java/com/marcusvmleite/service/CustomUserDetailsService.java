@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.marcusvmleite.dao.UsuarioDao;
-import com.marcusvmleite.model.Usuario;
+import com.marcusvmleite.dao.UserDao;
+import com.marcusvmleite.model.User;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,19 +22,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
 	@Autowired
-	private UsuarioDao usuarioDao;
+	private UserDao userDao;
 	
-	/**
-	 * Returns a populated {@link UserDetails} object. The username is first
-	 * retrieved from the database and then mapped to a {@link UserDetails}
-	 * object.
-	 */
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
-			Usuario domainUser = usuarioDao.findByUsername(username);
-			Usuario usuario = new Usuario(domainUser.getId(), domainUser.getUsername(), domainUser.getPassword(), 
+			User domainUser = userDao.findByUsername(username);
+			User user = new User(domainUser.getId(), domainUser.getUsername(), domainUser.getPassword(), 
 					true, true, true, true, new ArrayList<GrantedAuthority>());
-			return usuario;
+			return user;
 		} catch (Exception e) {
 			LOGGER.error("Error getting user.", e);
 			throw new RuntimeException(e);

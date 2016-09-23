@@ -14,9 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class WebSessionCurrentTenantIdentifierResolver implements CurrentTenantIdentifierResolver {
 
-	/**
-	 * Logger da classe.
-	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebSessionCurrentTenantIdentifierResolver.class);
 
     @Autowired

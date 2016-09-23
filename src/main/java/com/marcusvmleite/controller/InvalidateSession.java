@@ -8,10 +8,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class InvalidateSession {
 	
-    /**
-     * This url gets invoked when spring security invalidates session (ie timeout).
-     * Specific content indicates ui layer that session has been invalidated and page should be redirected to logout. 
-     */
     @RequestMapping(value = "invalidate.do", method = RequestMethod.GET, headers = "X-Requested-With=XMLHttpRequest")
     @ResponseBody
     public String invalidateSessionAjax() {
