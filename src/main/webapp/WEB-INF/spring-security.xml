@@ -1,0 +1,49 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+
+	<!-- Configuração principal do Spring Security -->
+	<http auto-config="false" use-expressions="true">
+
+		<!-- Access denied page -->
+		<access-denied-handler error-page="/403" />
+
+		<!-- Parâmetros para login -->
+		<form-login login-page="/login" 
+					default-target-url="/index"
+					always-use-default-target="true" 
+					authentication-failure-url="/login?error"
+					username-parameter="username" 
+					password-parameter="password"
+					login-processing-url="/j_spring_security_check" />
+		<logout logout-url="/j_spring_security_logout" logout-success-url="/login?logout" invalidate-session="true" delete-cookies="JSESSIONID" />
+
+		<!-- Controle de quantidade de usuário simultâneos e de URL de sessão inválida -->
+		<session-management invalid-session-url="/invalidate.do" session-fixation-protection="migrateSession" session-authentication-error-url="/login?error">
+			<concurrency-control error-if-maximum-exceeded="true" expired-url="/login?expire" max-sessions="1"/>
+		</session-management>
+		
+		<remember-me
+			remember-me-parameter="_spring_security_remember_me" 
+			remember-me-cookie="SPRING_SECURITY_REMEMBER_ME_COOKIE" />
+		
+	</http>
+
+	<authentication-manager>
+		<authentication-provider user-service-ref="customUserDetailsService">
+			<password-encoder ref="encoder" />
+		</authentication-provider>
+	</authentication-manager>
+
+	<beans:bean id="encoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+		<beans:constructor-arg name="strength" value="11" />
+	</beans:bean>
+
+</beans:beans>

@@ -1,0 +1,66 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/mvc 
+http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+http://www.springframework.org/schema/security
+http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+
+	<mvc:annotation-driven />
+	
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<sec:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" proxy-target-class="true"/>
+	
+	<!-- Informa ao Spring onde ele deve procurar por classes anotadas com @Controller, @Valid, etc. -->
+	<context:component-scan base-package="com.blank.controller" />
+	
+	<mvc:view-controller path="/" view-name="login"/>
+	
+	<!-- Este bean serve para dizer ao Spring que nossas JSPs estarão na pasta /WEB-INF/views/ -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/views/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+
+	<!-- Bean utilizado pelo Spring para configuração dos validadores de form -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="validationMessageSource" ref="messageSource" />
+	</bean>
+
+	<!-- Bean que informa ao Spring qual o arquivo com as mensagens de validação (i18n) -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath:message" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	
+	<bean id="pathMatcher" class="org.springframework.util.AntPathMatcher">
+		<constructor-arg index="0" value="." />
+	</bean>
+
+	<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**/*"/>
+            <bean id="webContentInterceptor" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+                <property name="cacheSeconds" value="0"/>
+                <property name="useExpiresHeader" value="true"/>
+                <property name="useCacheControlHeader" value="true"/>
+                <property name="useCacheControlNoStore" value="true"/>
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+</beans>

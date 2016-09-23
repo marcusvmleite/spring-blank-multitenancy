@@ -1,0 +1,53 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<!-- Informa ao Spring que queremos controlar transações utilizando annotations -->
+	<tx:annotation-driven />
+
+	<!-- Informa ao Spring onde ele deve procurar por classes anotadas com @Service e @Repository -->
+	<context:component-scan base-package="com.blank.service, com.blank.dao" />
+
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:jboss/datasources/teste" />
+	</bean>
+	
+	<bean id="webSessionTenantIdentifierResolver"
+          class="com.blank.dao.multitenant.WebSessionCurrentTenantIdentifierResolver" scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="simpleTenantConnectionProvider" class="com.blank.dao.multitenant.SimpleMultiTenantConnectionProvider">
+    </bean>
+
+	<!-- Session Factory utilizado nos DAOs pelo Hibernate -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+		<property name="hibernateProperties">
+			<map>
+                <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+                <entry key="hibernate.show_sql" value="true"/>
+                <entry key="hibernate.multiTenancy" value="SCHEMA"/>
+                <entry key="hibernate.tenant_identifier_resolver" value-ref="webSessionTenantIdentifierResolver"/>
+                <entry key="hibernate.multi_tenant_connection_provider" value-ref="simpleTenantConnectionProvider"/>
+            </map>
+		</property>
+		<property name="packagesToScan" value="com.blank.model" />
+	</bean>
+	
+	<!-- Controlador de transação -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager"
+		p:sessionFactory-ref="sessionFactory">
+	</bean>
+
+</beans>
